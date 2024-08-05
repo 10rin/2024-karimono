@@ -9,138 +9,138 @@
 
 </head>
  
+
+ 
+ 
 <body>
- 
- 
-  <body>
-    <h1>借り物競争ゲーム</h1>
-    <p id="message"></p>
-    <p id="messages"></p>
- 
-    <button id="webcamButton" disabled>
-      カメラを開く
-    </button>
-    <div style="position: relative;">
-      <video id="webcam" style="position:absolute;left:0px;top:0px;width:100%;height:auto" autoplay playsinline></video>
-      <div id="canvas" style="position:absolute;left:0px;top:0px">
-      </div>
+  <h1>借り物競争ゲーム</h1>
+  <p id="message"></p>
+  <p id="messages"></p>
+
+  <button id="webcamButton" disabled>
+    カメラを開く
+  </button>
+  <div style="position: relative;">
+    <video id="webcam" style="position:absolute;left:0px;top:0px;width:100%;height:auto" autoplay playsinline></video>
+    <div id="canvas" style="position:absolute;left:0px;top:0px">
     </div>
- 
- 
- 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      let result_message = "";
-      const socket = io();
-                 
-      socket.on('new_challenger', (message) => {
-        document.getElementById('messages').innerText = "あなたは1人目です カメラをオンにしてね";
-        mode = 1;
-      });
-      socket.on('you_are_challenger', (message) => {
-        document.getElementById('messages').innerText = "あなたは2人目です カメラをオンにしてね";
-        mode = 1;
-      });
-
-
-      socket.on('start', (message) => {
-        document.getElementById('messages').innerText = "ゲームスタート！";
-        mode = 3;
-        // if(sound.isLoaded()){
-        //   sound.play();
-        // }
-        sound.play();        
-      });
+  </div>
 
 
 
-      let randomWord =randomWord;
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    let result_message = "";
+    const socket = io();
+                
+    socket.on('new_challenger', (message) => {
+      document.getElementById('messages').innerText = "あなたは1人目です カメラをオンにしてね";
+      mode = 1;
+    });
+    socket.on('you_are_challenger', (message) => {
+      document.getElementById('messages').innerText = "あなたは2人目です カメラをオンにしてね";
+      mode = 1;
+    });
 
-      socket.on('random_word', (randomWord_) => {
-        document.getElementById('messages').innerText = "odai get！";
-        randomWord = randomWord_;
-        console.log(randomWord_);
-      });
+
+    socket.on('start', (message) => {
+      document.getElementById('messages').innerText = "ゲームスタート！";
+      mode = 3;
+      // if(sound.isLoaded()){
+      //   sound.play();
+      // }
+      sound.play();        
+    });
 
 
-      // var timer2 = 20;
 
-      socket.on('result_match', (data) => {
-        // console.log('Received data:', data);
-        // console.log(data);
-        // mode = 1;
-        let te = {
-          me: 0,
-          you: 0
-        };
-        //timer2--;
-        //document.getElementById('messages').innerText = `残り${timer2}秒`;
-        if(mode == 5 || mode == 6){
-          return;
-        }
+    let randomWord =randomWord;
 
-        for (d of data) {
-          if (d.id != socket.id) {
-            //相手情報
-            te.you = d.janken_type;
-            if(d.janken_type == randomWord){
-              document.getElementById('messages').innerText = ``;
-              mode = 5;
-              return;
-            }
+    socket.on('random_word', (randomWord_) => {
+      document.getElementById('messages').innerText = "odai get！";
+      randomWord = randomWord_;
+      console.log(randomWord_);
+    });
+
+
+    // var timer2 = 20;
+
+    socket.on('result_match', (data) => {
+      // console.log('Received data:', data);
+      // console.log(data);
+      // mode = 1;
+      let te = {
+        me: 0,
+        you: 0
+      };
+      //timer2--;
+      //document.getElementById('messages').innerText = `残り${timer2}秒`;
+      if(mode == 5 || mode == 6){
+        return;
+      }
+
+      for (d of data) {
+        if (d.id != socket.id) {
+          //相手情報
+          te.you = d.janken_type;
+          if(d.janken_type == randomWord){
+            document.getElementById('messages').innerText = ``;
+            mode = 5;
+            return;
           }
-          else {
-            //自分情報
-            //document.getElementById('messages').innerText += ` `;
-            te.me = d.janken_type;
-            if(d.janken_type == randomWord){
-              document.getElementById('messages').innerText = ``;
-              mode = 6;
-              return;
-            }
+        }
+        else {
+          //自分情報
+          //document.getElementById('messages').innerText += ` `;
+          te.me = d.janken_type;
+          if(d.janken_type == randomWord){
+            document.getElementById('messages').innerText = ``;
+            mode = 6;
+            return;
           }
-          console.log('janken_type:', d.janken_type); // 各 janken_type を確認するためのコンソールログ
-
         }
-        
+        console.log('janken_type:', d.janken_type); // 各 janken_type を確認するためのコンソールログ
 
-        // 'Victory', 'Closed?Fist', 'Open_Palm'
-        // if (te.me == 'Victory' && te.you == 'Victroy') {
-        //   result_message = "あいこ！！";
-        // }
-        // setTimeout(() => {
-        //   document.getElementById('messages').innerText = "";
-        //   result_message = "";
-        // }, 5000);
-        if(mode == 4){
-          document.getElementById('messages').innerText = "引き分けです";
-        }
+      }
+      
 
+      // 'Victory', 'Closed?Fist', 'Open_Palm'
+      // if (te.me == 'Victory' && te.you == 'Victroy') {
+      //   result_message = "あいこ！！";
+      // }
+      // setTimeout(() => {
+      //   document.getElementById('messages').innerText = "";
+      //   result_message = "";
+      // }, 5000);
+      if(mode == 4){
+        document.getElementById('messages').innerText = "引き分けです";
+      }
+
+    });
+
+
+
+
+
+
+
+    socket.on('clientDisconnected', (message) => {
+          const msgElem = document.createElement('p');
+          msgElem.textContent = message;
+          document.body.appendChild(msgElem);
       });
 
+  </script>
 
 
+  <!-- include js libraries -->
+  <!-- <script src="./js/drawing_utils.js" crossorigin="anonymous"></script> -->
+  <!-- <script src="./js/hands.js" crossorigin="anonymous"></script> -->
+  <script src="./js/p5.js"></script>
+  <script src="./js/sketch.js"></script>
+  <script src="./js/p5.sound.js"></script>
+  <script type="module" src="./js/script.js"></script>
 
-
-
-
-      socket.on('clientDisconnected', (message) => {
-           const msgElem = document.createElement('p');
-           msgElem.textContent = message;
-           document.body.appendChild(msgElem);
-       });
-
-    </script>
- 
- 
-    <!-- include js libraries -->
-    <!-- <script src="./js/drawing_utils.js" crossorigin="anonymous"></script> -->
-    <!-- <script src="./js/hands.js" crossorigin="anonymous"></script> -->
-    <script src="./js/p5.js"></script>
-    <script src="./js/sketch.js"></script>
-    <script src="./js/p5.sound.js"></script>
-    <script type="module" src="./js/script.js"></script>
- 
-  </body>
+</body>
  
 </html>
