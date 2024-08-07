@@ -12,32 +12,21 @@ let connectedClients = 0;
 let ready_count = 0;
 let janken_type_count = 0;
 let janken_types  = [];
-// let randomWord;
 
-// // setup内で一度だけ単語をランダムに選ぶ
-// const words = ["backpack","handbag","tie","bottle",
-// "wine glass","cup","fork","knife","spoon","bowl","couch",
-// "potted plant","laptop","mouse","remote","keyboard","cell phone",
-// "microwave","book","clock","scissors","teddy bear","hair drier",
-// "toothbrush"];
-// const randomIndex = Math.floor(Math.random() * words.length);
-// randomWord = words[randomIndex];
 
-// window.randomWord = randomWord;
 
 let randomWord;
 
 // setup内で一度だけ単語をランダムに選ぶ
 const words = ["backpack", "handbag", "tie", "bottle",
-    "wine glass", "cup", "fork", "knife", "spoon", "bowl", "couch",
+    "wine glass", "cup", "fork", "knife", "spoon", "bowl",
     "potted plant", "laptop", "mouse", "remote", "keyboard", "cell phone",
-    "microwave", "book", "clock", "scissors", "teddy bear", "hair drier",
+    "book", "clock", "scissors", "teddy bear", "hair drier",
     "toothbrush"];
-var randomIndex;// = Math.floor(Math.random() * words.length);
+const randomIndex = Math.floor(Math.random() * words.length);
+console.log("ランダムインデックス: ", randomIndex); // インデックスの確認
 randomWord = words[randomIndex];
-
-
-
+console.log("選ばれた単語: ", randomWord); // 選ばれた単語の確認
 
 
 
@@ -57,10 +46,8 @@ io.on('connection', (socket) => {
        socket.emit('you_are_challenger','先客がいます');
     }
 
-//    randomIndex = Math.floor(Math.random() * words.length);
-//    randomWord = words[randomIndex];
-//    socket.emit('random_word',randomWord);
-    socket.emit('random_word',"book");
+
+    socket.emit('random_word',randomWord);
     
 
     socket.on('ready',()=>{
@@ -93,8 +80,6 @@ io.on('connection', (socket) => {
         console.log('クライアントが切断されました',
             connectedClients, socket.id);
     });
-    // // クライアントにランダムな単語を送信
-    // socket.emit('random_word', randomWord);
 
 });
  

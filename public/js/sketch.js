@@ -1,7 +1,7 @@
 var results;
 // var sound;
 var emitInterval = null;
-var emitDuration = 10000; // 30秒間
+var emitDuration = 20000; // 30秒間
 var emitIntervalTime = 1000; // 1秒ごとに送信
 // let randomWord;
 
@@ -24,16 +24,6 @@ function setup() {
     let p5canvas = createCanvas(400, 400);
     p5canvas.parent('#canvas');
 
-    //   // setup内で一度だけ単語をランダムに選ぶ
-    // const words = ["backpack","handbag","tie","bottle",
-    //     "wine glass","cup","fork","knife","spoon","bowl","couch",
-    //     "potted plant","laptop","mouse","remote","keyboard","cell phone",
-    //     "microwave","book","clock","scissors","teddy bear","hair drier",
-    //     "toothbrush"];
-    // const randomIndex = Math.floor(Math.random() * words.length);
-    // randomWord = words[randomIndex];
-    
-    // window.randomWord = randomWord;
 
     // お手々が見つかると以下の関数が呼び出される．resultsに検出結果が入っている．
     gotDetections = function (_results) {
@@ -99,10 +89,9 @@ function draw() {
             // fill(0);
             noStroke();
             fill(255);
-            textAlign(LEFT, CENTER);
+            textAlign(CENTER);
             textSize(30);
-            text("借り物競争です！出てくるお題を探して相手と勝負！", 60, 200);
-            text("ボトルをカメラに写して準備してね！", 60, 240);
+            text("bottleをカメラに写して準備", width/2, height/2);
         }
 
 
@@ -113,11 +102,6 @@ function draw() {
 
                 let name = detection.categories[0].categoryName;
 
-                //人間は除外
-                //if(name == 'person'){
-                //    continue;
-                //}
-
                 /////////////////////
                 //ゲーム開始判定 ボトル待ち
                 /////////////////////
@@ -125,23 +109,16 @@ function draw() {
                     mode = 2;
                     socket.emit('ready', '');
                 }
-                // else if (name != 'bottle' && mode == 2) {
-                // mode = 1;
-                // socket.emit('unready', '');
-                // }
             }
         }
         if(mode == 2){
             // fill(0);
             noStroke();
             fill(255);
-            textAlign(LEFT, CENTER);
+            textAlign(CENTER);
             textSize(30);
-            text("相手の準備が完了するまでお待ちください", 60, 200);
+            text("相手の準備ができるまで待ってね", width/2, height/2);
         }
-
-
-
 
         /////////////////////
         //レディー状態
@@ -151,9 +128,9 @@ function draw() {
             // fill(0);
             noStroke();
             fill(255);
-            textAlign(LEFT, CENTER);
+            textAlign(CENTER);
             textSize(30);
-            text(randomWord, 60, 200);
+            text(randomWord, width/2,height/2+height/4+height/8);
         }
 
         /////////////////////
@@ -181,11 +158,6 @@ function draw() {
                         //}
                     }
                     timer++;
-                    // noStroke();
-                    // fill(255);
-                    // textAlign(LEFT, CENTER);
-                    // textSize(20);
-                    // text("CD: " + emitIntervalTime, 50, 30);
                 }, emitIntervalTime);
                 
                 /////////////////////
@@ -195,68 +167,70 @@ function draw() {
                     clearInterval(emitInterval);
                     emitInterval = null;
                     
-                    //timer = 0;
                     //勝敗がついていない場合はモード４に
                     if(mode == 3){
                         mode = 4;
                     }
                 }, emitDuration);
-
-                
             }
         } 
+
         if(mode == 4){
             fill(0);
             noStroke();
             fill(255);
-            textAlign(LEFT, CENTER);
+            textAlign(CENTER);
             textSize(30);
-            text("引き分けです", 60, 200);
-            if(result_timer++>200){
+            text("引き分けです", width/2, height/2);
+            if(result_timer++>100){
                 mode = 1;
                 timer = 0;
+                result_timer = 0;
+                document.getElementById('messages').innerText = "もう一度挑戦！";
+
             }
         }
         if(mode == 5){
             fill(0);
             noStroke();
             fill(255);
-            textAlign(LEFT, CENTER);
+            textAlign(CENTER);
             textSize(30);
-            text("相手の勝ちです！", 60, 200);
-            if(result_timer++>200){
+            text("あなたの負けです！",width/2, height/2);
+            if(result_timer++>100){
                 mode = 1;
                 timer = 0;
+                document.getElementById('messages').innerText = "もう一度挑戦！";
             }
         }
         if(mode == 6){
             fill(0);
             noStroke();
             fill(255);
-            textAlign(LEFT, CENTER);
+            textAlign(CENTER);
             textSize(30);
-            text("あなたの勝ちです！", 60, 200);
-            if(result_timer++>200){
+            text("あなたの勝ちです！",width/2, height/2);
+            if(result_timer++>100){
                 mode = 1;
                 timer = 0;
+                document.getElementById('messages').innerText = "もう一度挑戦！";
             }
         }
-        // if(mode == 5 || mode == 6){
-        //     clearInterval(emitInterval);
-        //     emitInterval = null;
-        //     mode = 7;
-
-        // }
-
-            
-        
     }
     noStroke();
     fill(255);
     textAlign(LEFT, CENTER);
     textSize(15);
-    text("mode: " + mode, 50, 50);
-    text("countDown: " + timer, 50, 30);
+    text("mode: " + mode, 30, 30);
+
+    if( mode == 3 ){
+        noStroke();
+        fill(255,128);
+        textAlign(CENTER);
+        textSize(150);
+        text(timer, width/2, height/2);
+        textSize(15);
+    }
 
     noFill();
     rect(0, 0, 640, 480);

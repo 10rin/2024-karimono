@@ -1,146 +1,136 @@
 <!DOCTYPE html>
 <html lang="ja">
- 
 <head>
   <meta charset="UTF-8">
   <title>karimono-kyosou</title>
-  <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <style>
+    body {
+      padding-top: 20px;
+      background-color: #ffffff;
+      color: #242424;
+    }
+    h1{
+      font-size: 60px;
+    }
+    #message, #messages {
+      margin-top: 30px; /*位置を下げるためのマージン*/
+      font-size: 1.2rem;
+    }
+    #webcamButton {
+      margin-top: 30px; /*位置を下げるためのマージン*/
+    }
+    .video-container {
+      position: relative;
+      width: 100%;
+      /* margin-top: 20px; 位置を下げるためのマージン */
+    }
+    #webcam, #canvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: auto;
+      /* margin-top: 20px; 位置を下げるためのマージン */
 
+    }
+  </style>
 </head>
- 
-
- 
- 
 <body>
-  <h1>借り物競争ゲーム</h1>
-  <p id="message"></p>
-  <p id="messages"></p>
+  <div class="container">
+    <h1 class="text-center mb-4">借り物競争</h1>
+    <h3 class="text-center mb-4">お題をカメラに写して相手と勝負</h3>
 
-  <button id="webcamButton" disabled>
-    カメラを開く
-  </button>
-  <div style="position: relative;">
-    <video id="webcam" style="position:absolute;left:0px;top:0px;width:100%;height:auto" autoplay playsinline></video>
-    <div id="canvas" style="position:absolute;left:0px;top:0px">
+    <div class="alert alert-primary text-center" id="message" hidden></div>
+    <div class="text-center" id="messages"></div>
+
+<!-- <div class="card"> -->
+  <!-- <div class="card-body"> -->
+    <div class="text-center mb-3">
+      <button class="btn btn-outline-dark mb-3" id="webcamButton" disabled>カメラ</button>
     </div>
+    <div class="video-container">
+      <video id="webcam" autoplay playsinline></video>
+      <div id="canvas"></div>
+    </div>
+  <!-- </div> -->
+<!-- </div> -->
   </div>
-
-
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
     let result_message = "";
     const socket = io();
-                
+    let randomWord = "";
+
     socket.on('new_challenger', (message) => {
-      document.getElementById('messages').innerText = "あなたは1人目です カメラをオンにしてね";
-      mode = 1;
-    });
-    socket.on('you_are_challenger', (message) => {
-      document.getElementById('messages').innerText = "あなたは2人目です カメラをオンにしてね";
+      document.getElementById('messages').innerText = "1st Challenger カメラをオンにしてね";
       mode = 1;
     });
 
+    socket.on('you_are_challenger', (message) => {
+      document.getElementById('messages').innerText = "2st Challenger カメラをオンにしてね";
+      mode = 1;
+    });
 
     socket.on('start', (message) => {
       document.getElementById('messages').innerText = "ゲームスタート！";
       mode = 3;
-      // if(sound.isLoaded()){
-      //   sound.play();
-      // }
-      sound.play();        
+      sound.play();
     });
-
-
-
-    let randomWord =randomWord;
 
     socket.on('random_word', (randomWord_) => {
-      document.getElementById('messages').innerText = "odai get！";
       randomWord = randomWord_;
-      console.log(randomWord_);
+      console.log('Received random word:', randomWord);
     });
 
-
-    // var timer2 = 20;
-
     socket.on('result_match', (data) => {
-      // console.log('Received data:', data);
-      // console.log(data);
-      // mode = 1;
-      let te = {
-        me: 0,
-        you: 0
-      };
-      //timer2--;
-      //document.getElementById('messages').innerText = `残り${timer2}秒`;
-      if(mode == 5 || mode == 6){
-        return;
-      }
+      let te = { me: 0, you: 0 };
+      if (mode == 5 || mode == 6) return;
 
-      for (d of data) {
+      data.forEach(d => {
         if (d.id != socket.id) {
-          //相手情報
           te.you = d.janken_type;
-          if(d.janken_type == randomWord){
-            document.getElementById('messages').innerText = ``;
+          if (d.janken_type == randomWord) {
+            document.getElementById('messages').innerText = "";
             mode = 5;
             return;
           }
-        }
-        else {
-          //自分情報
-          //document.getElementById('messages').innerText += ` `;
+        } else {
           te.me = d.janken_type;
-          if(d.janken_type == randomWord){
-            document.getElementById('messages').innerText = ``;
+          if (d.janken_type == randomWord) {
+            document.getElementById('messages').innerText = "";
             mode = 6;
             return;
           }
         }
-        console.log('janken_type:', d.janken_type); // 各 janken_type を確認するためのコンソールログ
+        console.log('janken_type:', d.janken_type);
+      });
 
-      }
-      
-
-      // 'Victory', 'Closed?Fist', 'Open_Palm'
-      // if (te.me == 'Victory' && te.you == 'Victroy') {
-      //   result_message = "あいこ！！";
-      // }
-      // setTimeout(() => {
-      //   document.getElementById('messages').innerText = "";
-      //   result_message = "";
-      // }, 5000);
-      if(mode == 4){
+      if (mode == 4) {
         document.getElementById('messages').innerText = "引き分けです";
       }
+      if (mode == 5) {
+        document.getElementById('messages').innerText = "あなたの負けです";
+      }
+      if (mode == 6) {
+        document.getElementById('messages').innerText = "あなたの勝ちです";
+      }
+
 
     });
 
-
-
-
-
-
-
     socket.on('clientDisconnected', (message) => {
-          const msgElem = document.createElement('p');
-          msgElem.textContent = message;
-          document.body.appendChild(msgElem);
-      });
-
+      const msgElem = document.createElement('p');
+      msgElem.textContent = message;
+      document.body.appendChild(msgElem);
+    });
   </script>
 
-
-  <!-- include js libraries -->
-  <!-- <script src="./js/drawing_utils.js" crossorigin="anonymous"></script> -->
-  <!-- <script src="./js/hands.js" crossorigin="anonymous"></script> -->
   <script src="./js/p5.js"></script>
   <script src="./js/sketch.js"></script>
   <script src="./js/p5.sound.js"></script>
   <script type="module" src="./js/script.js"></script>
-
 </body>
- 
 </html>
