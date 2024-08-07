@@ -23,11 +23,15 @@ const words = ["backpack", "handbag", "tie", "bottle",
     "potted plant", "laptop", "mouse", "remote", "keyboard", "cell phone",
     "book", "clock", "scissors", "teddy bear", "hair drier",
     "toothbrush"];
-const randomIndex = Math.floor(Math.random() * words.length);
-console.log("ランダムインデックス: ", randomIndex); // インデックスの確認
-randomWord = words[randomIndex];
-console.log("選ばれた単語: ", randomWord); // 選ばれた単語の確認
 
+function getRandomWord() {
+    const randomIndex = Math.floor(Math.random() * words.length);
+    console.log("ランダムインデックス: ", randomIndex); // インデックスの確認
+    const randomWord = words[randomIndex];
+    console.log("選ばれた単語: ", randomWord); // 選ばれた単語の確認
+    return randomWord;
+}
+    
 
 
  //conectionは事前に定義socketは接続してきたやつ
@@ -46,7 +50,9 @@ io.on('connection', (socket) => {
        socket.emit('you_are_challenger','先客がいます');
     }
 
-
+    
+    // 接続するたびに新しいランダムな単語を選ぶ
+    const randomWord = getRandomWord();
     socket.emit('random_word',randomWord);
     
 

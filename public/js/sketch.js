@@ -186,7 +186,7 @@ function draw() {
                 mode = 1;
                 timer = 0;
                 result_timer = 0;
-                document.getElementById('messages').innerText = "もう一度挑戦！";
+                document.getElementById('messages').innerText = "リロードしてもう一度挑戦！";
 
             }
         }
